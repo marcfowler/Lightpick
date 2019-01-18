@@ -57,6 +57,7 @@
         tooltipNights: false,
         orientation: 'auto',
         disableWeekends: false,
+        preventFuturePaging: false,
         locale: {
             buttons: {
                 prev: '&leftarrow;',
@@ -925,6 +926,8 @@
             this._opts.calendar = [moment(date)];
 
             renderCalendar(this.el, this._opts);
+
+            this.handlePaging();
         },
 
         gotoMonth: function(month) 
@@ -936,6 +939,8 @@
             this._opts.calendar[0].set('month', month);
 
             renderCalendar(this.el, this._opts);
+
+            this.handlePaging();
         },
 
         prevMonth: function()
@@ -945,6 +950,8 @@
             renderCalendar(this.el, this._opts);
 
             checkDisabledDatesInRange(this.el, this._opts);
+
+            this.handlePaging();
         },
 
         nextMonth: function()
@@ -954,6 +961,8 @@
             renderCalendar(this.el, this._opts);
 
             checkDisabledDatesInRange(this.el, this._opts);
+
+            this.handlePaging();
         },
 
         prevYear: function()
@@ -968,6 +977,21 @@
             this._opts.calendar[0] = moment(this._opts.calendar[0]).add(1, 'year');
 
             renderMonthsOfYear(this.el, this._opts);
+        },
+
+        handlePaging: function()
+        {
+            if(!this._opts.preventFuturePaging || !this._opts.maxDate) return;
+
+            var month_floor = this._opts.maxDate.startOf('day').unix(), lowVisible = Array.prototype.slice.call(this.el.querySelectorAll('[data-time]')).shift(), maxVisible = Array.prototype.slice.call(this.el.querySelectorAll('[data-time]')).pop();
+            lowVisible = Math.round(parseInt(lowVisible.getAttribute('data-time')) / 1000);
+            maxVisible = Math.round(parseInt(maxVisible.getAttribute('data-time')) / 1000);
+
+            if(month_floor >= lowVisible && month_floor <= maxVisible) { // The max date is visible now? Disable paging
+                this.el.querySelector('.lightpick__next-action').setAttribute('disabled', true);
+            } else {
+                this.el.querySelector('.lightpick__next-action').removeAttribute('disabled');
+            }
         },
 
         updatePosition: function()
@@ -1178,6 +1202,8 @@
                 if (typeof this._opts.onOpen === 'function') {
                     this._opts.onOpen.call(this);
                 }
+
+                this.handlePaging();
 
                 this.el.querySelector('.lightpick__months-of-the-year').innerHTML = '';
 

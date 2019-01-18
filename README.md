@@ -209,6 +209,14 @@ A space-separated string consisting of one or two of “left” or “right”, 
 
 Disable Saturday and Sunday.
 
+### preventFuturePaging
+- Type: `Boolean`
+- Default: `false`
+
+If enabled, you will not be able to use the 'next' arrows to page past the max date. Useful if you want to disable going past today for example via `maxDate`, and prevent users scrolling off into the future there they can't select anything further.
+
+Must be used in conjunction with `maxDate`.
+
 ### locale
 - Type: `Object`
 - Default: 
